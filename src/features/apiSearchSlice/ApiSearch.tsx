@@ -27,7 +27,7 @@ export function ApiSearch() {
   }
   const btnPages = []
   for (let page = 1; page <= dataSearch.total_pages; page++) {
-    btnPages.push(<IconButton key={page} onClick={() => dispatch(userListAsync(page.toString()))}>{page}</IconButton>)
+    btnPages.push(<BtnPaginate key={page} page={page} currentPage={dataSearch.page}></BtnPaginate>)
   }
   return (
     <div>
@@ -41,7 +41,16 @@ export function ApiSearch() {
           spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}
         >
           {rows}
-          <Grid item xs={4} sm={6} md={8}>
+          <Grid item
+            xs={4}
+            sm={6}
+            md={8}
+            container
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+
+          >
             {btnPages}
           </Grid>
         </Grid>
@@ -50,10 +59,11 @@ export function ApiSearch() {
           direction="row"
           justifyContent="center"
           alignItems="center"
+
           spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}
         >
           {dataSearch.user &&
-            <Grid item >
+            <Grid item style={{ margin: "50px 0px" }}>
               <BoxUser user={dataSearch.user}></BoxUser>
             </Grid>
           }
@@ -109,8 +119,21 @@ export function BoxUser({ user }: any) {
         </Typography>
       </CardContent>
       <CardActions>
-        <Button size="small" onClick={() => dispatch(cleanUser())}>Close</Button>
+        <Button size="small" color='secondary' onClick={() => dispatch(cleanUser())}>Close</Button>
       </CardActions>
     </Card>
+  )
+}
+export function BtnPaginate({ page, currentPage }: any) {
+  const dispatch = useAppDispatch();
+  return (
+    <Grid>
+      <Button
+        variant={currentPage !== page ? 'outlined' : 'contained'}
+        color="secondary"
+        size="small"
+        onClick={() => dispatch(userListAsync(page.toString()))}>{page}
+      </Button>
+    </Grid>
   )
 }
