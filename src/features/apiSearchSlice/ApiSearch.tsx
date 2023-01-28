@@ -1,32 +1,37 @@
 import { Avatar, Button, Card, CardActions, CardContent, CardHeader, CardMedia, Container, Grid, IconButton, Typography } from '@mui/material';
 import { red } from '@mui/material/colors';
-import React, { useEffect, useState } from 'react';
-import NightlightIcon from '@mui/icons-material/Nightlight';
-
+import { useEffect } from 'react';
+import InfoIcon from '@mui/icons-material/Info';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
-  searchAsync,
-  searchData
-
+  userListAsync,
+  userAsync,
+  searchData,
+  cleanUser
 } from './apisearchSlice';
 
 
 
 export function ApiSearch() {
   const dataSearch = useAppSelector(searchData);
-  console.log(dataSearch)
   const dispatch = useAppDispatch();
-
+  useEffect(() => {
+    if (dataSearch.data.length <= 0) {
+      dispatch(userListAsync("1"))
+    }
+  });
   const rows = [];
-  for (let user of dataSearch) {
-    // note: we are adding a key prop here to allow react to uniquely identify each
-    // element in this array. see: https://reactjs.org/docs/lists-and-keys.html
-    rows.push(<Grid item xs={4} sm={6} md={8} key={user.id}><BoxUser user={user}></BoxUser></Grid>);
+  for (let user of dataSearch.data) {
+    rows.push(<Grid item xs={4} sm={6} md={8} key={user.id}><BoxUser user={user} action={() => dispatch(userAsync(user.id.toString()))}></BoxUser></Grid>);
+  }
+  const btnPages = []
+  for (let page = 1; page <= dataSearch.total_pages; page++) {
+    btnPages.push(<IconButton key={page} onClick={() => dispatch(userListAsync(page.toString()))}>{page}</IconButton>)
   }
   return (
     <div>
       <Container maxWidth="sm">
-        <Button onClick={() => dispatch(searchAsync("test"))}>get data</Button>
+
         <Grid
           container
           direction="row"
@@ -36,19 +41,32 @@ export function ApiSearch() {
         >
           {rows}
         </Grid>
+        {btnPages}
 
+        {dataSearch.user &&
+          <Card sx={{ maxWidth: 345 }}>
+            <CardMedia
+              sx={{ height: 140 }}
+              image={dataSearch.user.avatar}
+              title="green iguana"
+            />
+            <CardContent>
+              <Typography gutterBottom variant="h5" component="div">
+                {dataSearch.user.first_name + " " + dataSearch.user.last_name}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                {dataSearch.email}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              <Button size="small" onClick={() => dispatch(cleanUser())}>Close</Button>
+            </CardActions>
+          </Card>}
       </Container>
     </div>
   );
 }
-// {
-//   "id": 7,
-//     "email": "michael.lawson@reqres.in",
-//       "first_name": "Michael",
-//         "last_name": "Lawson",
-//           "avatar": "https://reqres.in/img/faces/7-image.jpg"
-// }
-export function BoxUser({ user }: any) {
+export function BoxUser({ user, action }: any) {
   return (
 
 
@@ -63,8 +81,13 @@ export function BoxUser({ user }: any) {
               alt="Paella dish"
             />
           </Avatar>
-        }
 
+        }
+        action={
+          <IconButton aria-label="settings" onClick={action}>
+            <InfoIcon />
+          </IconButton>
+        }
         title={user.first_name + " " + user.last_name}
         subheader={user.email}
       />

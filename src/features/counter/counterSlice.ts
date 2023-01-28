@@ -62,8 +62,6 @@ export const counterSlice = createSlice({
       state.value.num += 5;
     },
     setName: (state, action: PayloadAction<string>) => {
-      console.log(action);
-
       state.value.name = action.payload;
     },
   },
