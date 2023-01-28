@@ -3,11 +3,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import './menu.css';
 import HomeIcon from '@mui/icons-material/Home';
-// import styled from "@emotion/styled";
-
-// const Item = styled(Paper)(({ theme }) => ({
-
-// }));
 export class Menu extends React.Component {
     
     render() {
@@ -17,8 +12,6 @@ export class Menu extends React.Component {
                     <MenuItem title="Home"><HomeIcon /></MenuItem>
                 </Link>
             </Stack>
-
-
         )
     }
 }
